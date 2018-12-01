@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="indexSize" format="dimension" />
+    <attr name="distanceSize" format="dimension" />
+    <attr name="indexCount" format="integer" />
+    <attr name="focusColor" format="color" />
+    <attr name="normalColor" format="color" />
+    <attr name="guideShape">
+        <enum name="circle" value="11" />
+        <enum name="square" value="22" />
+        <enum name="diamond" value="33" />
+        <enum name="triangle" value="44" />
+    </attr>
+    <attr name="changeMode">
+        <enum name="change" value="11" />
+        <enum name="alpha" value="22" />
+        <enum name="slide" value="33" />
+    </attr>
+    <declare-styleable name="GuideView">
+        <attr name="indexSize" />
+        <attr name="distanceSize" />
+        <attr name="indexCount" />
+        <attr name="focusColor" />
+        <attr name="normalColor" />
+        <attr name="guideShape" />
+        <attr name="changeMode" />
+    </declare-styleable>
+</resources>

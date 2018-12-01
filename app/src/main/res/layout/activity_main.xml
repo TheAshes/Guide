@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/circle_change"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="圆形_切换"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/circle_alpha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="圆形_渐变"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/circle_slide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="圆形_滑动"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/square_change"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="正方形_切换"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/square_alpha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="正方形_渐变"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/square_slide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="正方形_滑动"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/diamond_change"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="菱形_切换"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/diamond_alpha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="菱形_渐变"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/diamond_slide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="菱形_滑动"
+            android:textSize="25dp" />
+        <Button
+        android:id="@+id/triangle_change"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="三角形_切换"
+        android:textSize="25dp" />
+        <Button
+            android:id="@+id/triangle_alpha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="三角形_渐变"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/triangle_slide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="三角形_滑动"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+</ScrollView>
