@@ -58,7 +58,7 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
             focusPaintNormal = new Paint();
             focusPaintNormal.setAntiAlias(true);
             focusPaintNormal.setColor(mFocusColor);
-            alpha(255, 0);
+            focusPaintNormal.setAlpha(0);
         }
         initPaintTools();
     }
@@ -77,12 +77,14 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
                             && positionOffset - lastPositionOffset < 0.5f) {
                         currentPosition++;
                         change();
+                        invalidate();
                     } else if (positionOffset < lastPositionOffset
                             && lastPositionOffset >= 0.5f
                             && positionOffset < 0.5f
                             && lastPositionOffset - positionOffset < 0.5f) {
                         currentPosition--;
                         change();
+                        invalidate();
                     }
                 }
                 break;
@@ -99,11 +101,13 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
                         isReverse = true;
                         currentPosition = mViewPager.getCurrentItem();
                         updatePosition();
+                        invalidate();
                     } else if (positionOffset > lastPositionOffset
                             && positionOffset - lastPositionOffset > 0.5f) {
                         isReverse = false;
                         currentPosition = mViewPager.getCurrentItem();
                         updatePosition();
+                        invalidate();
                     }
                 }
                 if (positionOffset > 0 && lastPositionOffset > 0) {
@@ -120,17 +124,18 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
                             alpha((int) (255 - 255 * positionOffset), (int) (255 * positionOffset));
                         }
                     }
+                    invalidate();
                 }
                 break;
             case GuideView.MODE_SLIDE:
                 slide((position + positionOffset) * (mIndexSize + mDistanceSize));
+                invalidate();
                 break;
         }
         lastPositionOffset = positionOffset;
     }
 
     public void onPageSelected(int position) {
-
     }
 
     public void onPageScrollStateChanged(int state) {
@@ -142,6 +147,7 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
             if (mMode == GuideView.MODE_ALPHA) {
                 alpha(255, 0);
             }
+            invalidate();
         }
         lastState = state;
     }
@@ -168,6 +174,7 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
     public void setcurrentPosition(int position){
         currentPosition = position;
         updatePosition();
+        invalidate();
     }
     protected abstract void change();
 

@@ -51,11 +51,10 @@ public class Diamond extends GuideShape {
         if (mMode == GuideView.MODE_ALPHA) {
             if (isReverse) {
                 refreshPath(focusPathNormal, mIndexSize + mDistanceSize);
-                canvas.drawPath(focusPathNormal, focusPaintNormal);
             } else {
                 refreshPath(focusPathNormal, -(mIndexSize + mDistanceSize));
-                canvas.drawPath(focusPathNormal, focusPaintNormal);
             }
+            canvas.drawPath(focusPathNormal, focusPaintNormal);
         }
     }
 
@@ -70,7 +69,6 @@ public class Diamond extends GuideShape {
         xTop = xBottom = mIndexSize / 2 + value;
         xRight = mIndexSize + value;
         refreshPath(focusPath, 0);
-        invalidate();
     }
 
     @Override
@@ -79,7 +77,6 @@ public class Diamond extends GuideShape {
         xTop = xBottom = mIndexSize / 2 + currentPosition * (mIndexSize + mDistanceSize);
         xRight = mIndexSize + currentPosition * (mIndexSize + mDistanceSize);
         refreshPath(focusPath, 0);
-        invalidate();
     }
 
     private void refreshPath(Path path, float value) {

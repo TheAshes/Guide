@@ -51,11 +51,10 @@ public class Triangle extends GuideShape {
             case GuideView.MODE_ALPHA:
                 if (isReverse) {
                     refreshPath(focusPathNormal, mIndexSize + mDistanceSize);
-                    canvas.drawPath(focusPathNormal, focusPaintNormal);
                 } else {
                     refreshPath(focusPathNormal, -(mIndexSize + mDistanceSize));
-                    canvas.drawPath(focusPathNormal, focusPaintNormal);
                 }
+                canvas.drawPath(focusPathNormal, focusPaintNormal);
                 break;
         }
     }
@@ -71,7 +70,6 @@ public class Triangle extends GuideShape {
         xTop = mIndexSize / 2 + value;
         xRight = mIndexSize + value;
         refreshPath(focusPath, 0);
-        invalidate();
     }
 
     @Override
@@ -80,7 +78,6 @@ public class Triangle extends GuideShape {
         xTop = mIndexSize / 2 + currentPosition * (mIndexSize + mDistanceSize);
         xRight = mIndexSize + currentPosition * (mIndexSize + mDistanceSize);
         refreshPath(focusPath, 0);
-        invalidate();
     }
 
     private void refreshPath(Path path, float value) {

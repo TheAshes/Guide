@@ -63,12 +63,10 @@ public class Circle extends GuideShape {
     @Override
     protected void slide(float value) {
         focusX = shapeRadius + value;
-        invalidate();
     }
 
     @Override
     protected void updatePosition() {
         focusX = shapeRadius + currentPosition * (mIndexSize + mDistanceSize);
-        invalidate();
     }
 }
