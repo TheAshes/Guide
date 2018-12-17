@@ -15,6 +15,7 @@
         <enum name="change" value="11" />
         <enum name="alpha" value="22" />
         <enum name="slide" value="33" />
+        <enum name="scroll" value="44" />
     </attr>
     <declare-styleable name="GuideView">
         <attr name="indexSize" />
