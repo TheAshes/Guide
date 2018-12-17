@@ -26,34 +26,25 @@ import com.chz.guide.shape.Triangle;
  */
 public class GuideView extends View {
 
-    /*
-    shape
-    */
-    public final static int SHAPE_CIRCLE = 11;
-    public final static int SHAPE_SQUARE = 22;
-    public final static int SHAPE_DIAMOND = 33;
-    private final static int SHAPE_TRIANGLE = 44;
+    public static final int SHAPE_CIRCLE = 11;
+    public static final int SHAPE_SQUARE = 22;
+    public static final int SHAPE_DIAMOND = 33;
+    private static final int SHAPE_TRIANGLE = 44;
 
-    /*
-    mode
-    */
-    public final static int MODE_CHANGE = 11;
-    public final static int MODE_ALPHA = 22;
-    public final static int MODE_SLIDE = 33;
+    public static final int MODE_CHANGE = 11;
+    public static final int MODE_ALPHA = 22;
+    public static final int MODE_SLIDE = 33;
+    public static final int MODE_SCROLL = 44;
 
-    /*
-    Attributes
-     */
     private GuideShape shape;
     private int viewWidth;
     private int viewHeight;
     private int indexShape;
     private int changeMode;
-    private int normalColor;
-    private int focusColor;
     private float indexSize;
     private float distanceSize;
     private int indexCount;
+    private int scrollCount;
 
     public GuideView(Context context) {
         this(context, null);
@@ -65,16 +56,17 @@ public class GuideView extends View {
 
     public GuideView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.GuideView, defStyleAttr, 0);
+        TypedArray typedArray = context.getTheme().
+                obtainStyledAttributes(attrs, R.styleable.GuideView, defStyleAttr, 0);
 
-        normalColor = typedArray.getColor(R.styleable.GuideView_normalColor, Color.BLACK);
-        focusColor = typedArray.getColor(R.styleable.GuideView_focusColor, Color.BLACK);
+        int normalColor = typedArray.getColor(R.styleable.GuideView_normalColor, Color.BLACK);
+        int focusColor = typedArray.getColor(R.styleable.GuideView_focusColor, Color.BLACK);
         indexSize = typedArray.getDimension(R.styleable.GuideView_indexSize, 0f);
         if (indexSize <= 0) {
             throw new IllegalArgumentException("indexSize Cannot be less than 0");
         }
         distanceSize = typedArray.getDimension(R.styleable.GuideView_distanceSize, 0f);
-        if (distanceSize <= 0) {
+        if (distanceSize < 0) {
             throw new IllegalArgumentException("distanceSize Cannot be less than 0");
         }
         indexCount = typedArray.getInt(R.styleable.GuideView_indexCount, 0);
@@ -83,8 +75,17 @@ public class GuideView extends View {
         }
         indexShape = typedArray.getInt(R.styleable.GuideView_guideShape, SHAPE_CIRCLE);
         changeMode = typedArray.getInt(R.styleable.GuideView_changeMode, MODE_CHANGE);
+        if (changeMode == MODE_SCROLL) {
+            if (distanceSize % indexSize != 0) {
+                throw new IllegalArgumentException("If mode is scrolling," +
+                        "The distanceSize width must be an integer multiple of indexSize");
+            }
+            scrollCount = (int) (distanceSize / indexSize + 1);
+        }
         typedArray.recycle();
         initShape();
+        shape.baseInit(changeMode, normalColor, focusColor, indexSize,
+                distanceSize, indexCount, scrollCount);
     }
 
     private void initShape() {
@@ -102,22 +103,31 @@ public class GuideView extends View {
                 shape = new Triangle(this);
                 break;
         }
-        shape.baseInit(changeMode, normalColor, focusColor, indexSize, distanceSize, indexCount);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         viewWidth = (int) (indexCount * (indexSize + distanceSize) - distanceSize);
+        viewHeight = (int) indexSize;
         switch (indexShape) {
+            case SHAPE_CIRCLE:
+                break;
+            case SHAPE_SQUARE:
+                if (changeMode == MODE_SCROLL) {
+                    viewHeight = (int) (indexSize / Math.cos(45 * Math.PI / 180));
+                }
+                break;
+            case SHAPE_DIAMOND:
+                break;
             case SHAPE_TRIANGLE:
-                viewHeight = (int) (indexSize / 2 * Math.tan(60 * Math.PI / 180));
-                setMeasuredDimension(viewWidth, viewHeight);
+                if (changeMode != MODE_SCROLL) {
+                    viewHeight = (int) (indexSize / 2 * Math.tan(60 * Math.PI / 180));
+                }
                 break;
             default:
-                viewHeight = (int) indexSize;
-                setMeasuredDimension(viewWidth, viewHeight);
                 break;
         }
+        setMeasuredDimension(viewWidth, viewHeight);
     }
 
     @Override
@@ -135,25 +145,26 @@ public class GuideView extends View {
         if (position < 0 || position >= indexCount) {
             throw new IndexOutOfBoundsException("position indexOutOfBoundsException");
         }
-        shape.setcurrentPosition(position);
+        shape.setCurrentPosition(position);
     }
 
     private void checkViewSize() {
         final ViewGroup viewGroup = (ViewGroup) getParent();
-        viewGroup.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onGlobalLayout() {
-                viewGroup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int width = viewGroup.getWidth();
-                int height = viewGroup.getHeight();
-                if (viewWidth > width) {
-                    throw new IllegalArgumentException("guideWidth Cannot be greater than parentWidth");
-                }
-                if (viewHeight > height) {
-                    throw new IllegalArgumentException("guideHeight Cannot be greater than parentHeight");
-                }
-            }
-        });
+        viewGroup.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onGlobalLayout() {
+                        viewGroup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        int width = viewGroup.getWidth();
+                        int height = viewGroup.getHeight();
+                        if (viewWidth > width) {
+                            throw new IllegalArgumentException("guideWidth Cannot be greater than parentWidth");
+                        }
+                        if (viewHeight > height) {
+                            throw new IllegalArgumentException("guideHeight Cannot be greater than parentHeight");
+                        }
+                    }
+                });
     }
 }
