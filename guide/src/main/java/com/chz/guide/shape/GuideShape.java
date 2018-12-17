@@ -16,10 +16,8 @@ import com.chz.guide.view.GuideView;
  */
 public abstract class GuideShape implements ViewPager.OnPageChangeListener {
 
-    protected static final double PI = Math.PI / 180;
-
-    private View mView;
-    private ViewPager mViewPager;
+    protected View mView;
+    protected ViewPager mViewPager;
 
     protected int mMode;
     protected int mNormalColor;
@@ -27,32 +25,28 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
     protected float mIndexSize;
     protected float mDistanceSize;
     protected int mIndexCount;
-    protected int mScrollCount;
 
     protected Paint normalPaint;
     protected Paint focusPaint;
     protected Paint focusPaintNormal;
 
-    private int lastState = ViewPager.SCROLL_STATE_IDLE;
-    protected boolean isReverse = true;
-    protected float lastPositionOffset;
+    private float lastPositionOffset;
+    private int lastState;
     protected int currentPosition;
-    protected int currentScrollPosition;
-    private int alphaOffset;
+    protected boolean isReverse = true;
 
     public GuideShape(View view) {
         mView = view;
     }
 
     public void baseInit(int mode, int normalColor, int focusColor
-            , float indexSize, float distanceSize, int indexCount, int scrollCount) {
+            , float indexSize, float distanceSize, int indexCount) {
         mMode = mode;
         mNormalColor = normalColor;
         mFocusColor = focusColor;
         mIndexSize = indexSize;
         mDistanceSize = distanceSize;
         mIndexCount = indexCount;
-        mScrollCount = scrollCount;
 
         normalPaint = new Paint();
         focusPaint = new Paint();
@@ -83,64 +77,59 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
                             && positionOffset - lastPositionOffset < 0.5f) {
                         currentPosition++;
                         change();
-                        invalidateView();
+                        invalidate();
                     } else if (positionOffset < lastPositionOffset
                             && lastPositionOffset >= 0.5f
                             && positionOffset < 0.5f
                             && lastPositionOffset - positionOffset < 0.5f) {
                         currentPosition--;
                         change();
-                        invalidateView();
+                        invalidate();
                     }
                 }
                 break;
             case GuideView.MODE_ALPHA:
-                if (positionOffset > 0) {
-                    if (lastPositionOffset == 0) {
-                        if (positionOffset < 0.5f) {
-                            isReverse = true;
-                        } else {
-                            isReverse = false;
-                        }
+                if (positionOffset > 0 && lastPositionOffset == 0) {
+                    if (positionOffset < 0.5f) {
+                        isReverse = true;
                     } else {
-                        if (positionOffset < lastPositionOffset
-                                && lastPositionOffset - positionOffset > 0.5f) {
-                            isReverse = true;
-                            currentPosition = mViewPager.getCurrentItem();
-                            updatePosition();
-                        } else if (positionOffset > lastPositionOffset
-                                && positionOffset - lastPositionOffset > 0.5f) {
-                            isReverse = false;
-                            currentPosition = mViewPager.getCurrentItem();
-                            updatePosition();
-                        }
+                        isReverse = false;
+                    }
+                } else if (positionOffset > 0 && lastPositionOffset > 0) {
+                    if (positionOffset < lastPositionOffset
+                            && lastPositionOffset - positionOffset > 0.5f) {
+                        isReverse = true;
+                        currentPosition = mViewPager.getCurrentItem();
+                        updatePosition();
+                        invalidate();
+                    } else if (positionOffset > lastPositionOffset
+                            && positionOffset - lastPositionOffset > 0.5f) {
+                        isReverse = false;
+                        currentPosition = mViewPager.getCurrentItem();
+                        updatePosition();
+                        invalidate();
                     }
                 }
                 if (positionOffset > 0 && lastPositionOffset > 0) {
-                    alphaOffset = (int) (255*positionOffset);
                     if (positionOffset > lastPositionOffset) {
                         if (isReverse) {
-                            alpha(255 - alphaOffset, alphaOffset);
+                            alpha((int) (255 - 255 * positionOffset), (int) (255 * positionOffset));
                         } else {
-                            alpha(alphaOffset, 255 - alphaOffset);
+                            alpha((int) (255 * positionOffset), (int) (255 - 255 * positionOffset));
                         }
                     } else {
                         if (!isReverse) {
-                            alpha(alphaOffset, 255 - alphaOffset);
+                            alpha((int) (255 * positionOffset), (int) (255 - 255 * positionOffset));
                         } else {
-                            alpha(255 - alphaOffset, alphaOffset);
+                            alpha((int) (255 - 255 * positionOffset), (int) (255 * positionOffset));
                         }
                     }
+                    invalidate();
                 }
-                invalidateView();
                 break;
             case GuideView.MODE_SLIDE:
                 slide((position + positionOffset) * (mIndexSize + mDistanceSize));
-                invalidateView();
-                break;
-            case GuideView.MODE_SCROLL:
-                scroll(position, positionOffset);
-                invalidateView();
+                invalidate();
                 break;
         }
         lastPositionOffset = positionOffset;
@@ -154,16 +143,16 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
                 && lastState != ViewPager.SCROLL_STATE_IDLE
                 && currentPosition != mViewPager.getCurrentItem()) {
             currentPosition = mViewPager.getCurrentItem();
+            updatePosition();
             if (mMode == GuideView.MODE_ALPHA) {
                 alpha(255, 0);
             }
-            updatePosition();
-            invalidateView();
+            invalidate();
         }
         lastState = state;
     }
 
-    private void invalidateView() {
+    protected void invalidate() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             mView.invalidate();
         } else {
@@ -176,23 +165,20 @@ public abstract class GuideShape implements ViewPager.OnPageChangeListener {
         mViewPager.addOnPageChangeListener(this);
     }
 
-    public void setCurrentPosition(int position) {
-        currentPosition = position;
-        updatePosition();
-        invalidateView();
-    }
-
-    protected abstract void change();
-
-    protected abstract void slide(float value);
-
     private void alpha(int focusAlpha, int focusAlphaNormal) {
         focusPaint.setAlpha(focusAlpha);
         focusPaintNormal.setAlpha(focusAlphaNormal);
-        invalidateView();
+        invalidate();
     }
 
-    protected abstract void scroll(int position, float positionOffset);
+    public void setcurrentPosition(int position){
+        currentPosition = position;
+        updatePosition();
+        invalidate();
+    }
+    protected abstract void change();
+
+    protected abstract void slide(float value);
 
     protected abstract void updatePosition();
 
