@@ -64,11 +64,6 @@ public class Square extends GuideShape {
     }
 
     @Override
-    protected void scroll(int position, float positionOffset) {
-
-    }
-
-    @Override
     protected void updatePosition() {
         focusX = shapeRadius + currentPosition*(mIndexSize+mDistanceSize);
     }

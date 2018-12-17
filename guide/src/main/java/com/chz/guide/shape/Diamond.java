@@ -72,11 +72,6 @@ public class Diamond extends GuideShape {
     }
 
     @Override
-    protected void scroll(int position, float positionOffset) {
-
-    }
-
-    @Override
     protected void updatePosition() {
         xLeft = currentPosition * (mIndexSize + mDistanceSize);
         xTop = xBottom = mIndexSize / 2 + currentPosition * (mIndexSize + mDistanceSize);
