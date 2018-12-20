@@ -12,8 +12,8 @@ import com.chz.guide.view.GuideView;
  */
 public class Diamond extends GuideShape {
 
-    private float xLeft, yLeft, xTop, yTop, xRight, yRight, xBottom, yBottom;
-
+    private float xLeft, xTop, xRight, xBottom;
+    private float yLeft, yTop, yRight, yBottom;
     private Path normalPath;
     private Path focusPath;
     private Path focusPathNormal;
@@ -33,14 +33,14 @@ public class Diamond extends GuideShape {
         xBottom = mIndexSize / 2;
         yBottom = mIndexSize;
         focusPath = new Path();
-        refreshPath(focusPath, 0);
+        updatePath(focusPath, 0);
         if (mMode == GuideView.MODE_ALPHA) {
             focusPathNormal = new Path();
-            refreshPath(focusPathNormal, mIndexSize + mDistanceSize);
+            updatePath(focusPathNormal, unitSize);
         }
         normalPath = new Path();
         for (int i = 0; i < mIndexCount; i++) {
-            normalPath.addPath(focusPath, i * (mIndexSize + mDistanceSize), 0);
+            normalPath.addPath(focusPath, i * unitSize, 0);
         }
     }
 
@@ -50,9 +50,9 @@ public class Diamond extends GuideShape {
         canvas.drawPath(focusPath, focusPaint);
         if (mMode == GuideView.MODE_ALPHA) {
             if (isReverse) {
-                refreshPath(focusPathNormal, mIndexSize + mDistanceSize);
+                updatePath(focusPathNormal, unitSize);
             } else {
-                refreshPath(focusPathNormal, -(mIndexSize + mDistanceSize));
+                updatePath(focusPathNormal, -unitSize);
             }
             canvas.drawPath(focusPathNormal, focusPaintNormal);
         }
@@ -68,24 +68,24 @@ public class Diamond extends GuideShape {
         xLeft = value;
         xTop = xBottom = mIndexSize / 2 + value;
         xRight = mIndexSize + value;
-        refreshPath(focusPath, 0);
+        updatePath(focusPath, 0);
     }
 
     @Override
-    protected void scroll(int position, float positionOffset) {
+    protected void scroll() {
 
     }
 
     @Override
     protected void updatePosition() {
-        xLeft = currentPosition * (mIndexSize + mDistanceSize);
-        xTop = xBottom = mIndexSize / 2 + currentPosition * (mIndexSize + mDistanceSize);
-        xRight = mIndexSize + currentPosition * (mIndexSize + mDistanceSize);
-        refreshPath(focusPath, 0);
+        xLeft = currentPosition * unitSize;
+        xTop = xBottom = mIndexSize / 2 + currentPosition * unitSize;
+        xRight = mIndexSize + currentPosition * unitSize;
+        updatePath(focusPath, 0);
     }
 
-    private void refreshPath(Path path, float value) {
-        path.reset();
+    private void updatePath(Path path, float value) {
+        path.rewind();
         path.moveTo(xLeft + value, yLeft);
         path.lineTo(xTop + value, yTop);
         path.lineTo(xRight + value, yRight);

@@ -18,10 +18,6 @@ public class Triangle extends GuideShape {
     private float xLeft, yLeft, xTop, yTop, xRight, yRight;
     private float triangleHeight;
     private float marginTop;
-    private float unitSize;
-    private float scrollSize;
-    private float fullScrollOffset;
-    private float scrollOffset;
 
     public Triangle(View view) {
         super(view);
@@ -30,15 +26,15 @@ public class Triangle extends GuideShape {
     @Override
     protected void initPaintTools() {
         triangleHeight = (float) (mIndexSize * Math.sin(60 * PI));
-        unitSize = mIndexSize + mDistanceSize;
         if (mMode == GuideView.MODE_SCROLL) {
             marginTop = mIndexSize - triangleHeight;
+            unitAngle = TRIANGLE_UNIT_ANGLE;
         }
         focusPath = new Path();
         updatePosition();
         normalPath = new Path();
         Path temporaryPath = new Path();
-        refreshPath(temporaryPath, 0);
+        updatePath(temporaryPath, 0);
         for (int i = 0; i < mIndexCount; i++) {
             normalPath.addPath(temporaryPath, i * unitSize, 0);
         }
@@ -54,9 +50,9 @@ public class Triangle extends GuideShape {
         switch (mMode) {
             case GuideView.MODE_ALPHA:
                 if (isReverse) {
-                    refreshPath(focusPathNormal, unitSize);
+                    updatePath(focusPathNormal, unitSize);
                 } else {
-                    refreshPath(focusPathNormal, -unitSize);
+                    updatePath(focusPathNormal, -unitSize);
                 }
                 canvas.drawPath(focusPathNormal, focusPaintNormal);
                 break;
@@ -73,109 +69,43 @@ public class Triangle extends GuideShape {
         xLeft = value;
         xTop = mIndexSize / 2 + value;
         xRight = mIndexSize + value;
-        refreshPath(focusPath, 0);
+        updatePath(focusPath, 0);
     }
 
     @Override
-    protected void scroll(int position, float positionOffset) {
-        fullScrollOffset = mScrollCount * positionOffset;
-        scrollOffset = fullScrollOffset - currentScrollPosition;
-        if (positionOffset == 0) {
-            currentScrollPosition = 0;
-            updatePosition();
+    protected void scroll() {
+        if (isReverse) {
+            xLeft = (float) (xRight + mIndexSize * Math.cos((180 - sweepAngle) * PI));
+            yLeft = (float) (yRight - mIndexSize * Math.sin((180 - sweepAngle) * PI));
+            xTop = (float) (xRight + mIndexSize * Math.cos((120 - sweepAngle) * PI));
+            yTop = (float) (yRight - mIndexSize * Math.sin((120 - sweepAngle) * PI));
+        } else {
+            xTop = (float) (xLeft + mIndexSize * Math.cos((180 - sweepAngle) * PI));
+            yTop = (float) (yLeft - mIndexSize * Math.sin((180 - sweepAngle) * PI));
+            xRight = (float) (xLeft + mIndexSize * Math.cos((120 - sweepAngle) * PI));
+            yRight = (float) (yLeft - mIndexSize * Math.sin((120 - sweepAngle) * PI));
         }
-        if (position != currentPosition) {
-            if (position < currentPosition) {
-                currentScrollPosition = mScrollCount;
-            } else {
-                currentScrollPosition = 0;
-            }
-            currentPosition = position;
-            updatePosition();
-        }
-        if (positionOffset > 0) {
-            if (lastPositionOffset == 0) {
-                if (positionOffset < 0.5f) {
-                    isReverse = true;
-                } else {
-                    isReverse = false;
-                }
-            } else {
-                if (positionOffset < lastPositionOffset
-                        && lastPositionOffset - positionOffset > 0.5f) {
-                    isReverse = true;
-                } else if (positionOffset > lastPositionOffset
-                        && positionOffset - lastPositionOffset > 0.5f) {
-                    isReverse = false;
-                }
-            }
-        }
-        if (positionOffset > 0 && lastPositionOffset > 0) {
-            if (positionOffset > lastPositionOffset) {
-                if (!isReverse && fullScrollOffset - currentScrollPosition > 0) {
-                    isReverse = !isReverse;
-                    currentScrollPosition -=1;
-                    updatePosition();
-                }
-                if (fullScrollOffset - currentScrollPosition >= 1) {
-                    currentScrollPosition++;
-                    updatePosition();
-                }
-                if (isReverse) {
-                    xLeft = (float) (xRight + mIndexSize * Math.cos((180 - scrollOffset * 120) * PI));
-                    yLeft = (float) (yRight - mIndexSize * Math.sin((180 - scrollOffset * 120) * PI));
-                    xTop = (float) (xRight + mIndexSize * Math.cos((120 - scrollOffset * 120) * PI));
-                    yTop = (float) (yRight - mIndexSize * Math.sin((120 - scrollOffset * 120) * PI));
-                } else {
-                    xTop = (float) (xLeft + mIndexSize * Math.cos((180 - scrollOffset * 120) * PI));
-                    yTop = (float) (yLeft - mIndexSize * Math.sin((180 - scrollOffset * 120) * PI));
-                    xRight = (float) (xLeft + mIndexSize * Math.cos((120 - scrollOffset * 120) * PI));
-                    yRight = (float) (yLeft - mIndexSize * Math.sin((120 - scrollOffset * 120) * PI));
-                }
-                refreshPath(focusPath, 0);
-            } else {
-                if (isReverse && fullScrollOffset - currentScrollPosition < 0) {
-                    isReverse = !isReverse;
-                    currentScrollPosition += 1;
-                    updatePosition();
-                }
-                if (fullScrollOffset - currentScrollPosition <= -1) {
-                    currentScrollPosition--;
-                    updatePosition();
-                }
-                if (!isReverse) {
-                    xTop = (float) (xLeft + mIndexSize * Math.cos((180 - scrollOffset * 120) * PI));
-                    yTop = (float) (yLeft - mIndexSize * Math.sin((180 - scrollOffset * 120) * PI));
-                    xRight = (float) (xLeft + mIndexSize * Math.cos((120 - scrollOffset * 120) * PI));
-                    yRight = (float) (yLeft - mIndexSize * Math.sin((120 - scrollOffset * 120) * PI));
-                } else {
-                    xLeft = (float) (xRight + mIndexSize * Math.cos((180 - scrollOffset * 120) * PI));
-                    yLeft = (float) (yRight - mIndexSize * Math.sin((180 - scrollOffset * 120) * PI));
-                    xTop = (float) (xRight + mIndexSize * Math.cos((120 - scrollOffset * 120) * PI));
-                    yTop = (float) (yRight - mIndexSize * Math.sin((120 - scrollOffset * 120) * PI));
-                }
-                refreshPath(focusPath, 0);
-            }
-        }
+        updatePath(focusPath, 0);
     }
 
     @Override
     protected void updatePosition() {
-        scrollSize = currentScrollPosition * mIndexSize;
-        xLeft = currentPosition * unitSize + scrollSize;
+        scrollSize = currentPosition * unitSize + currentScrollPosition * mIndexSize;
+        xLeft = scrollSize;
         yLeft = triangleHeight + marginTop;
-        xTop = mIndexSize / 2 + currentPosition * unitSize + scrollSize;
+        xTop = mIndexSize / 2 + scrollSize;
         yTop = marginTop;
-        xRight = mIndexSize + currentPosition * unitSize + scrollSize;
+        xRight = mIndexSize + scrollSize;
         yRight = triangleHeight + marginTop;
-        refreshPath(focusPath, 0);
+        updatePath(focusPath, 0);
     }
 
-    private void refreshPath(Path path, float value) {
-        path.reset();
+    private void updatePath(Path path, float value) {
+        path.rewind();
         path.moveTo(xLeft + value, yLeft);
         path.lineTo(xTop + value, yTop);
         path.lineTo(xRight + value, yRight);
         path.close();
     }
 }
+

@@ -65,8 +65,8 @@ public class Circle extends GuideShape {
     }
 
     @Override
-    protected void scroll(int position, float positionOffset) {
-        slide((position + positionOffset) * (mIndexSize + mDistanceSize));
+    protected void scroll() {
+
     }
 
     @Override

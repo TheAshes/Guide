@@ -26,17 +26,24 @@ import com.chz.guide.shape.Triangle;
  */
 public class GuideView extends View {
 
-    public static final int SHAPE_CIRCLE = 11;
-    public static final int SHAPE_SQUARE = 22;
-    public static final int SHAPE_DIAMOND = 33;
-    private static final int SHAPE_TRIANGLE = 44;
+    //单位圆周率
+    public static final double PI = Math.PI/180;
 
-    public static final int MODE_CHANGE = 11;
-    public static final int MODE_ALPHA = 22;
-    public static final int MODE_SLIDE = 33;
-    public static final int MODE_SCROLL = 44;
+    //形状
+    public static final int SHAPE_CIRCLE = 11;//圆形
+    public static final int SHAPE_SQUARE = 22;//正方形
+    public static final int SHAPE_DIAMOND = 33;//菱形
+    private static final int SHAPE_TRIANGLE = 44;//三角形
 
+    //角度
+    public static final int MODE_CHANGE = 11;//直接切换
+    public static final int MODE_ALPHA = 22;//渐变切换
+    public static final int MODE_SLIDE = 33;//滑动切换
+    public static final int MODE_SCROLL = 44;//滚动切换
+
+    //形状实例
     private GuideShape shape;
+    //控件基本参数
     private int viewWidth;
     private int viewHeight;
     private int indexShape;
@@ -58,33 +65,38 @@ public class GuideView extends View {
         super(context, attrs, defStyleAttr);
         TypedArray typedArray = context.getTheme().
                 obtainStyledAttributes(attrs, R.styleable.GuideView, defStyleAttr, 0);
-
         int normalColor = typedArray.getColor(R.styleable.GuideView_normalColor, Color.BLACK);
         int focusColor = typedArray.getColor(R.styleable.GuideView_focusColor, Color.BLACK);
         indexSize = typedArray.getDimension(R.styleable.GuideView_indexSize, 0f);
+        //指示器宽度必须大于0
         if (indexSize <= 0) {
-            throw new IllegalArgumentException("indexSize Cannot be less than 0");
+            throw new IllegalArgumentException("indexSize must be greater than 0");
         }
         distanceSize = typedArray.getDimension(R.styleable.GuideView_distanceSize, 0f);
+        //指示器间距不能小于0
         if (distanceSize < 0) {
-            throw new IllegalArgumentException("distanceSize Cannot be less than 0");
+            throw new IllegalArgumentException("distanceSize cannot be less than 0");
         }
         indexCount = typedArray.getInt(R.styleable.GuideView_indexCount, 0);
-        if (indexCount <= 0) {
-            throw new IllegalArgumentException("indexCount Cannot be less than 0");
+        //指示器数量不能小于0
+        if (indexCount < 0) {
+            throw new IllegalArgumentException("indexCount cannot be less than 0");
         }
         indexShape = typedArray.getInt(R.styleable.GuideView_guideShape, SHAPE_CIRCLE);
         changeMode = typedArray.getInt(R.styleable.GuideView_changeMode, MODE_CHANGE);
+        //如果切换模式为"滚动",为了动效，强制要求指示器间距必须为指示器宽度的整数倍
         if (changeMode == MODE_SCROLL) {
             if (distanceSize % indexSize != 0) {
                 throw new IllegalArgumentException("If mode is scrolling," +
                         "The distanceSize width must be an integer multiple of indexSize");
             }
+            //滚动模式下的指示器滚动次数
             scrollCount = (int) (distanceSize / indexSize + 1);
         }
         typedArray.recycle();
         initShape();
-        shape.baseInit(changeMode, normalColor, focusColor, indexSize,
+        //指示器参数初始化
+        shape.baseInit(changeMode, indexShape,normalColor, focusColor, indexSize,
                 distanceSize, indexCount, scrollCount);
     }
 
@@ -114,14 +126,14 @@ public class GuideView extends View {
                 break;
             case SHAPE_SQUARE:
                 if (changeMode == MODE_SCROLL) {
-                    viewHeight = (int) (indexSize / Math.cos(45 * Math.PI / 180));
+                    viewHeight = (int) (indexSize / Math.cos(45 *PI));
                 }
                 break;
             case SHAPE_DIAMOND:
                 break;
             case SHAPE_TRIANGLE:
                 if (changeMode != MODE_SCROLL) {
-                    viewHeight = (int) (indexSize / 2 * Math.tan(60 * Math.PI / 180));
+                    viewHeight = (int) (indexSize / 2 * Math.tan(60 * PI));
                 }
                 break;
             default:
@@ -148,6 +160,7 @@ public class GuideView extends View {
         shape.setCurrentPosition(position);
     }
 
+    //判断指示器控件是否超出父容器边界
     private void checkViewSize() {
         final ViewGroup viewGroup = (ViewGroup) getParent();
         viewGroup.getViewTreeObserver()
@@ -159,10 +172,12 @@ public class GuideView extends View {
                         int width = viewGroup.getWidth();
                         int height = viewGroup.getHeight();
                         if (viewWidth > width) {
-                            throw new IllegalArgumentException("guideWidth Cannot be greater than parentWidth");
+                            throw new IllegalArgumentException("guideWidth " +
+                                    "Cannot be greater than parentWidth");
                         }
                         if (viewHeight > height) {
-                            throw new IllegalArgumentException("guideHeight Cannot be greater than parentHeight");
+                            throw new IllegalArgumentException("guideHeight " +
+                                    "Cannot be greater than parentHeight");
                         }
                     }
                 });
