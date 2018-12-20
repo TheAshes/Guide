@@ -26,11 +26,18 @@
             android:text="圆形_渐变"
             android:textSize="25dp" />
         <Button
-            android:id="@+id/circle_slide"
+        android:id="@+id/circle_slide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="圆形_滑动"
+        android:textSize="25dp" />
+        <Button
+            android:id="@+id/circle_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="圆形_滑动"
+            android:text="圆形_滚动"
             android:textSize="25dp" />
         <Button
             android:id="@+id/square_change"
@@ -54,6 +61,13 @@
             android:text="正方形_滑动"
             android:textSize="25dp" />
         <Button
+            android:id="@+id/square_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="正方形_滚动"
+            android:textSize="25dp" />
+        <Button
             android:id="@+id/diamond_change"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,6 +89,13 @@
             android:text="菱形_滑动"
             android:textSize="25dp" />
         <Button
+            android:id="@+id/diamond_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="菱形_滚动"
+            android:textSize="25dp" />
+        <Button
         android:id="@+id/triangle_change"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,6 +115,13 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="三角形_滑动"
+            android:textSize="25dp" />
+        <Button
+            android:id="@+id/triangle_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="三角形_滚动"
             android:textSize="25dp" />
     </LinearLayout>
 

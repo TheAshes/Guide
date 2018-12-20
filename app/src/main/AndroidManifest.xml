@@ -28,6 +28,10 @@
         <activity android:name=".TriangleChangeActivity" />
         <activity android:name=".TriangleAlphaActivity" />
         <activity android:name=".TriangleSlideActivity" />
+        <activity android:name=".TriangleScrollActivity" />
+        <activity android:name=".CircleScrollActivity" />
+        <activity android:name=".DiamondScrollActivity" />
+        <activity android:name=".SquareScrollActivity"></activity>
     </application>
 
 </manifest>
